@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  dbapp:
+    image: mysql:latest
+    ports:
+      - "33061:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=pwdb
+    volumes:
+      - ./src/resources/db-init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - mynetwork
+
+  receptor:
+    build: src/main/java/receptor
+    ports:
+      - "5050:5050"
+    depends_on:
+      - dbapp
+    networks:
+      - mynetwork
+
+  camara:
+    build: src/main/java/camara
+    networks:
+      - mynetwork
+
+  appcliente:
+    build: src/main/java/cliente
+    stdin_open: true
+    tty: true
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
